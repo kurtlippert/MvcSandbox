@@ -1,0 +1,99 @@
+﻿.k-grid
+{
+    overflow: auto;
+}
+
+.k-grid td {
+    white-space: nowrap;
+    overflow: hidden;
+}
+ 
+.k-grid table {
+    table-layout: fixed;
+} 
+
+.k-grid-header .k-header
+{
+    white-space: normal;
+}
+
+.k-grid .k-i-arrowhead-s {
+    background-position: -32px -80px;
+}
+
+.k-textbox, .k-autocomplete, .k-dropdown-wrap, .k-picker-wrap, .k-numeric-wrap {
+    padding: 0 1.9em 0.25em 0.25em;
+}
+
+/* Additional entries that are added to the Columns checkbox dropdown menu*/
+div.k-column-menu ul.k-menu-group li.additional-entry {
+    padding: 5px;
+}
+
+.k-grid th.hide-menu a.k-grid-filter, .k-grid th.hide-menu a.k-header-column-menu {
+    display: none;
+}
+
+.k-grid th.hide-menu span.k-link {
+    margin-right: 0;
+}
+
+/* TreeView */
+
+.empty-folder {
+    background-position: 0 -16px;
+}
+
+.checked-folder {
+    background-position: 0 0;
+}
+
+/* List View */
+
+.video-list {
+    border: none;
+}
+
+.k-listview .videoContainer {
+    margin: 0 10px 5px;
+}
+
+.wgt-AddVideoWidget {
+    margin-top: 10px;
+}
+
+/* IconPalette */
+
+.k-iconpalette {
+    background-color: transparent !important;
+    border: 0;
+}
+
+.k-iconpalette .item {
+    padding: 20px;
+    border: 1px solid #000;
+}
+
+/* Tab Strip */
+
+.k-tabstrip-items .k-loading.k-complete {
+    width: 0;
+}
+
+.k-tabstrip .k-content.k-state-active {
+    padding-top: 15px;
+}
+
+.k-tabstrip .k-tabstrip-items {
+    margin: 0.3em 0.3em 0;
+}
+
+/* Grid Pager */
+
+.k-pager-wrap>.k-link {
+    height:auto;
+}
+
+.k-pager-wrap {
+    padding-top:10px;
+}

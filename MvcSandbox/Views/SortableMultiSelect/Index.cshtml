@@ -1,0 +1,165 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Sortable Multi-Select";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+
+<button class="k-button">Print in Order of selection</button>
+<select id="ms"></select>
+
+<br />
+
+<div id="print"></div>
+
+<style>
+    .placeholder {
+        -ms-opacity: 0.3;
+        opacity: 0.3;
+    }
+</style>
+
+<script>
+    var Telerik = Telerik || {};
+    Telerik.Extensions = Telerik.Extensions || {};
+
+    Telerik.Extensions.SortableMultiSelect = function (config) {
+        this.defaults = {
+            element: null,
+            dataTextField: "label",
+            dataValueField: "value",
+            dataSource: null,
+            dropText: "drop here"
+        };
+
+        var settings = $.extend(this.defaults, config);
+
+        if (!settings.element) {
+            throw Error("SortableMultiSelect: No element specified");
+        }
+
+        // So that the column names appear according to their .SortOrder
+        settings.value.sort(function(a, b) {
+            return a.SortOrder - b.SortOrder;
+        });
+
+        // So that selected items' sort order are adjusted after deletions or sortings
+        function refreshSelectionsSortOrder(multiSelect, listElements) {
+            var sortedValues = $.map(listElements, function(element) {
+                return $(element).find("span[data-id]").attr("data-id");
+            });
+
+            $.each(multiSelect.dataItems(), function(index, item) {
+                item.SortOrder = $.inArray("" + item.ColumnId, sortedValues) + 1;
+            });
+
+            multiSelect.value(sortedValues);
+        }
+
+        // The TagTemplate is so we can identify what data item the element is apart of in the DOM
+        // Slight defect here on Kendo's end:
+        //   - value: <some value>
+        //   - autoClose: false
+        // If both of these are set, then deleting one of the prepopulated elements
+        // causes an error in kendo.all.js (TypeError: Cannot read property 'top' of undefined).
+        // It doesn't appear to break anything as of now, you'll just get a message in the console.
+        settings.element.kendoMultiSelect({
+            value: settings.value,
+            dataSource: settings.dataSource,
+            dataTextField: settings.dataTextField,
+            dataValueField: settings.dataValueField,
+            tagTemplate: "<span data-id='#:data." + settings.dataValueField + "#'>#:data." + settings.dataTextField + "#</span>",
+            autoClose: false
+        });
+
+        this.multiSelect = settings.element.data("kendoMultiSelect");
+        var multiSelect = this.multiSelect;
+
+        // So that we correctly set the sort order on selection of a new item
+        this.multiSelect.bind("select", function(e) {
+            multiSelect.dataSource.data()[e.item.attr("data-index")].SortOrder = multiSelect.tagList.find("li").length;
+        });
+
+        // To reset deleted element's sort order (see: http://www.telerik.com/forums/multiselect-remove-selected-item-event-handling-)
+        this.multiSelect.bind("change", function() {
+            var previous = this._savedOld;
+            var current = this.value();
+            var diff = [];
+            if (previous) {
+                diff = $(previous).not(current).get();
+            }
+            this._savedOld = current.slice(0);
+            if (diff.length > 0) {
+                var deletedItem = $.grep(multiSelect.dataSource.data(), function(element) {
+                    return element[settings.dataValueField] === diff[0];
+                });
+                deletedItem.SortOrder = 0;
+
+                refreshSelectionsSortOrder(multiSelect, $("ul#ms_taglist").find("li"));
+            }
+        });
+
+        // To make it re-orderable
+        this.multiSelect.tagList.kendoSortable({
+            placeholder: function(element) {
+                return element.clone().addClass("placeholder");
+            },
+            change: function() {
+                refreshSelectionsSortOrder(multiSelect, this.items());
+            }
+        });
+    }
+
+
+    // Setup and Implementation
+    var dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "@Url.Action("GetMultiSelectColumns", "SortableMultiSelect")",
+                dataType: "json"
+            }
+        },
+        schema: {
+            model: {
+                id: "ColumnId",
+                fields: {
+                    ColumnId: { editable: false, nullable: true },
+                    ColumnName: { validataion: { required: true } },
+                    SortOrder: { type: "number", validation: { required: true, min: 0 } }
+                }
+            }
+        }
+    });
+
+    var model = @Html.Raw(Json.Encode(Model));
+
+    var itemSelector = new Telerik.Extensions.SortableMultiSelect({
+        element: $("#ms"),
+        dataTextField: "ColumnName",
+        dataValueField: "ColumnId",
+        value: model.Columns,
+        dataSource: dataSource,
+        dropText: "drop here"
+    });
+
+    $("button.k-button").click(function() {
+        var msg = "";
+        $.each(itemSelector.multiSelect.dataItems(), function(index, item) {
+            msg = msg + item.ColumnName + " " + item.ColumnId + " | ";
+        });
+
+        $.ajax({
+            url: "@Url.Action("Index", "SortableMultiSelect")",
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({ Columns: $("#ms").data("kendoMultiSelect").dataItems() })
+        });
+
+        $("#print").empty();
+        $("#print").append(msg);
+    });
+
+</script>
