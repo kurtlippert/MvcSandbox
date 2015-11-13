@@ -3,8 +3,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using MvcSandbox.Models;
+using Microsoft.Owin.Security.Google;
 using Owin;
+using MvcSandbox.Models;
 
 namespace MvcSandbox
 {

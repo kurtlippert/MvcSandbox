@@ -1,4 +1,5 @@
-﻿using System.Web.Optimization;
+﻿using System.Web;
+using System.Web.Optimization;
 
 namespace MvcSandbox
 {
@@ -25,19 +26,6 @@ namespace MvcSandbox
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
-
-            // Kendo Bundles
-            bundles.Add(new ScriptBundle("~/bundles/kendo").Include(
-                        "~/Scripts/kendo/kendo.all.js",
-                        "~/Scripts/kendo/kendo.aspnetmvc.js"));
-
-            bundles.Add(new StyleBundle("~/Content/kendo/css").Include(
-                        "~/Content/kendo/kendo.common-bootstrap.css",           // Core Kendo CSS that is bootstrap compatible
-                        "~/Content/kendo/kendo.common-bootstrap.overrides.css", // Our overrides for Core Kendo CSS
-                        "~/Content/kendo/kendo.bootstrap.css",                  // The Kendo Bootstrap Theme Css
-                        "~/Content/kendo/kendo.bootstrap.overrides.css"));      // Our overrides for the Bootstrap Theme Css
-
-            bundles.IgnoreList.Clear();
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using Microsoft.Owin;
-using MvcSandbox;
 using Owin;
 
-[assembly: OwinStartup(typeof(Startup))]
+[assembly: OwinStartupAttribute(typeof(MvcSandbox.Startup))]
 namespace MvcSandbox
 {
     public partial class Startup
